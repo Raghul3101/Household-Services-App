@@ -1,0 +1,314 @@
+openapi: 3.0.0
+info:
+  title: Household Services API
+  description: API documentation for Household Services application
+  version: 1.0.0
+paths:
+  /api/user-details:
+    get:
+      summary: Get user details
+      description: Fetches the details of the logged-in user using JWT token.
+      tags:
+        - User
+      responses:
+        '200':
+          description: Successfully fetched user details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  email:
+                    type: string
+                  role:
+                    type: string
+                  id:
+                    type: integer
+        '401':
+          description: Unauthorized access
+          
+  /login:
+    post:
+      summary: User Login
+      description: Authenticates a user and returns a JWT token.
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Successful login with access token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  access_token:
+                    type: string
+        '401':
+          description: Invalid email or password
+
+  /api/register-customer:
+    post:
+      summary: Register a new customer
+      description: Registers a new customer with required details.
+      tags:
+        - Registration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fname:
+                  type: string
+                lname:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                phone:
+                  type: string
+                address:
+                  type: string
+                pincode:
+                  type: string
+      responses:
+        '201':
+          description: Successful registration
+        '400':
+          description: Missing required fields
+        '500':
+          description: Internal server error
+
+  /api/register-professional:
+    post:
+      summary: Register a new professional
+      description: Registers a new professional with required details.
+      tags:
+        - Registration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fname:
+                  type: string
+                lname:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                service:
+                  type: string
+                phone:
+                  type: string
+                experience:
+                  type: string
+                address:
+                  type: string
+                pincode:
+                  type: string
+      responses:
+        '201':
+          description: Successful registration
+
+  /api/get-categories:
+    get:
+      summary: Get service categories
+      description: Fetches all available service categories.
+      tags:
+        - Services
+      responses:
+        '200':
+          description: List of categories
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  categories:
+                    type: array
+                    items:
+                      type: string
+
+  /api/get-services:
+    get:
+      summary: Get services by category
+      description: Fetches services under a specific category.
+      tags:
+        - Services
+      parameters:
+        - name: category
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of services
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  services:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+
+  /api/customer:
+    get:
+      summary: Get customer details
+      description: Fetches the details of the logged-in customer using JWT token.
+      tags:
+        - User
+      responses:
+        '200':
+          description: Successfully fetched customer details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+        '401':
+          description: Unauthorized access
+
+  /api/services/{category}:
+    get:
+      summary: Get services under a category
+      description: Fetches services under a specified category.
+      tags:
+        - Services
+      parameters:
+        - name: category
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of services under category
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  services:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                        price:
+                          type: number
+                          format: float
+                        rating:
+                          type: number
+                          format: float
+
+  /api/book-service:
+    post:
+      summary: Book a service
+      description: Allows a customer to book a service by specifying the service ID.
+      tags:
+        - Booking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                service_id:
+                  type: integer
+      responses:
+        '200':
+          description: Successfully booked service
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          description: Missing service ID
+        '404':
+          description: Service not found or no professionals available
+
+  /api/service-history:
+    get:
+      summary: Get service history
+      description: Fetches the service history for a customer.
+      tags:
+        - User
+      responses:
+        '200':
+          description: List of service history
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  history:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        service_name:
+                          type: string
+                        price:
+                          type: number
+                          format: float
+                        professional_name:
+                          type: string
+                        professional_phone:
+                          type: string
+                        status:
+                          type: string
+                        date:
+                          type: string
+                          format: date
+        '401':
+          description: Unauthorized access
+        '404':
+          description: No history found
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        email:
+          type: string
+        role:
+          type: string
+        id:
+          type: integer
